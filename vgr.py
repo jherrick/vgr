@@ -11,19 +11,16 @@ class VGR(user_input):
 		search_url_format = "https://www.giantbomb.com/api/search/?api_key={}&format=json&query={}&resources=game".format(API_KEY, search)
 		response = requests.get(search_url_format, headers=self.headers)
 
+		game_lookup(response.json())
+
+	def game_lookup(self, response):
+		game_url_format = "https://www.giantbomb.com/api/game/{}/?api_key={}".format(API_KEY, game)
+
+		for game in json["results"]:
+			games.append(game["api_detail_url"])
+
+			url_format = "https://www.giantbomb.com/api/game/3030-4725/?api_key={}".format(API_KEY)
+
+#json = response.json()
 #print "Search for ... "
-search = "metroid"
-
-
-
-json = response.json()
-
-games = []
-
-for game in json["results"]:
-	games.append(game["api_detail_url"])
-
-print games
-
-#game_url_format = "https://www.giantbomb.com/api/game/{}/?api_key={}".format(API_KEY, game)
-		url_format = "https://www.giantbomb.com/api/game/3030-4725/?api_key={}".format(API_KEY)
+#search = "metroid"
