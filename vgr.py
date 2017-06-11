@@ -1,26 +1,49 @@
 import requests
 from key import API_KEY
+import time
 
-class VGR(user_input):
+class VGR():
 	def __init__(self):
 		self.games = []
-		self.input = user_input
-		self.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+		self.headers = {"X-Mashape-Key": API_KEY, "Accept": "application/json"}
 
-	def user_search(self, self.input):
-		search_url_format = "https://www.giantbomb.com/api/search/?api_key={}&format=json&query={}&resources=game".format(API_KEY, search)
+	def user_search(self):
+		user_input = raw_input("Search for a game title (e.g. 'metroid'): ")
+		print "\n"
+		search_url_format = "https://igdbcom-internet-game-database-v1.p.mashape.com/games/?fields=name&limit=10&offset=0&search={}".format(user_input)
 		response = requests.get(search_url_format, headers=self.headers)
 
-		game_lookup(response.json())
+		info = response.json()
+		count = 1
+		for game in info:
+			print str(count) + ". " + str(game["name"])
+			if game["id"] not in self.games:
+				self.games.append(game["id"])
+			count += 1
 
-	def game_lookup(self, response):
-		game_url_format = "https://www.giantbomb.com/api/game/{}/?api_key={}".format(API_KEY, game)
+		print "\n"
+		selection = raw_input("Use the numpad to select your game: ")
+		print "\n"
 
-		for game in json["results"]:
-			games.append(game["api_detail_url"])
+		self.game_lookup(self.games[int(selection)-1])
 
-			url_format = "https://www.giantbomb.com/api/game/3030-4725/?api_key={}".format(API_KEY)
+	def game_lookup(self, code):
+		game_url_format = "https://igdbcom-internet-game-database-v1.p.mashape.com/games/{}?fields=*".format(code)
+		response = requests.get(game_url_format, headers=self.headers)
 
-#json = response.json()
-#print "Search for ... "
-#search = "metroid"
+		info = response.json()
+
+		self.genre_scrape(info[0]['genres'])
+
+	def genre_scrape(self, genres):
+		genre = ','.join(map(str, genres)) 
+		ranking_url_format = "https://igdbcom-internet-game-database-v1.p.mashape.com/genres/{}?fields=*".format(genre)
+		response = requests.get(ranking_url_format, headers=self.headers)
+
+		info = response.json()
+
+		print info
+	
+if __name__ == '__main__':
+	test = VGR()
+	test.user_search()
