@@ -65,26 +65,24 @@ class VGR():
 
 		print "Pulling data from servers... Please wait.\n"
 
-		for games in self.games:
+		self.recommend()
+
+	def recommend(self):
+		temp = ','.join(map(str,self.games))
+		game_url_format = "https://igdbcom-internet-game-database-v1.p.mashape.com/games/{}?fields=*".format(temp)
+		response = requests.get(game_url_format, headers=self.headers)
+
+		game_info = response.json()
+
+		for games in game_info:
 			try:
-				game_url_format = "https://igdbcom-internet-game-database-v1.p.mashape.com/games/{}?fields=*".format(games)
-				response = requests.get(game_url_format, headers=self.headers)
-
-				game_info = response.json()
-
-				rec_score = 0
-
-				rec_score += game_info[0]['rating']
-
-				if game_info[0]['id'] != self.selection:
-						self.recommendations.append([game_info[0]['name'], rec_score])
+				if games['id'] != self.selection:
+					self.recommendations.append([games['name'], games['rating']])
 			except KeyError:
 				pass
 
 		print "Analysis complete, your game recommendations are: "
-		self.recommend()
 
-	def recommend(self):
 		self.recommendations.sort(key=lambda item: item[1], reverse=True)
 		if len(self.recommendations) == 0:
 			print "No games found"
